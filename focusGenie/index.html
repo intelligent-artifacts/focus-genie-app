@@ -1,0 +1,115 @@
+<html>
+<head>
+<meta charset="utf-8">
+<script type="text/javascript" src="js/jquery.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/style.css"></link>
+
+<script type="text/javascript" src="scripts/focus.js"></script>
+</head>
+<body>
+    <div>
+    <h1><center>Focus Genie</center></h1>
+    <center><button id="explain_btn" onClick="explainThis()">Explain</button></center>
+	    <div id="explain" hidden>
+	    <p>
+	    The Focus Genie topology changes the direction of the resultant difference vector based on input strings.
+	    <br>Here, the input strings describe either a "food" or "bomb" object.  When the genie is first started, it doesn't
+	    know the difference between "food" or "bomb".  But, when it interacts with the object, it receives a "utility" score,
+	    sent via the 'scalar' input value.  +100 for eating the food, -100 for blowing up, +100 for escaping a bomb, -100 from running away from food.  This is represented by a happy or sad face.
+	    </p>
+	    <p>
+	    The top right corner shows the genie's <b>Decision Table</b> with an Action ID and Decision Weight. 
+	    No <i>a priori</i> information was provided. Even the Action IDs are random. But, through interaction with its environment,
+	    the genie learns which decisions are good or bad within its current context.
+	    </p>
+	    <p>
+	    Use this genie, or make your own genies at Intelligent Artifact's <a href="https://genie-factory.intelligent-artifacts.net">Genie Factory</a>.
+	    Find more at the <a href="https://genie-factory.intelligent-artifacts.net/bazaar">Bazaar</a>.
+	    </p>
+	    </div>
+    </div>
+    <div><center>
+    <div style="float:center;width:150px;font-weight:bold;">Genie Interface:</div><div style="float:center"><input type="text" id="primitive_url" size="50" maxlength="70" placeholder="http://<focus-bottle>.intelligent-artifacts.net:4100/primitive/jsonrpc"></div>
+    <button id="start" onclick="start()" disabled>Start</button><button id="stop" onclick="stop()" hidden>Stop</button>
+        <div style="clear: both;height:5px;"></div>
+    </center>
+    </div>
+
+    <div id="focusDemoContainer" style="width:100%;height:700px;"></div>
+    <script>
+    
+    function explainThis() {
+        $('#explain').show();
+        $('#explain_btn').hide();
+    }
+    
+    var primitive_url;
+    $(document).on('change', 'input#primitive_url', function() {
+        var primitive_url = $('#primitive_url').val();
+        //is this available?
+        console.log('checking...');
+        queryPrimitive(primitive_url, 'ping', function(data) {
+            message = data.result.message;
+            if (message == 'Ok'){
+                $('#start').attr("disabled", false);
+                queryPrimitive(primitive_url, 'clearAllMemory', function(data) {});
+                queryPrimitive(primitive_url, 'startActing', function(data) {});
+                $('#stop').attr("hidden", true);
+            }
+            else {
+                $('#start').attr("disabled", true);
+                $('#stop').attr("hidden", true);
+                alert("Bad genie or bottle location!");
+            }
+        });
+        
+    });
+    
+
+    function queryPrimitive(url, query, callback) {
+        var mydata = JSON.stringify({"jsonrpc": "1.0", "id":1, "method": query, "params": [] });
+        $.ajax({
+            type : "POST",
+            url : url,
+            data: mydata,
+            cache: false,
+            dataType: "json",
+            success : function(data) {
+                callback(data)
+                return;
+            },
+            error: function( data, status, error ) { 
+                $('#start').attr("disabled", true);
+                $('#stop').attr("hidden", true);
+                alert("Bad genie or bottle location!");
+            }
+        });
+    }
+
+    function stop() {
+        queryPrimitive($('#primitive_url').val(), 'stopActing', function(data){console.log(data);});
+        queryPrimitive($('#primitive_url').val(), 'clearAllMemory', function(data){console.log(data);});
+        $('#start').attr("hidden", true);
+        $('#stop').attr("hidden", true);
+        clearInterval(focus.RunInterval);
+    }
+    
+    function start() {
+        $('#start').attr("hidden", true);
+        $('#stop').attr("hidden", false);
+	    focus=new focusDemo({
+	        containingElement:'#focusDemoContainer',
+	        callURL: $('#primitive_url').val(),
+	        frameSpeed:20,
+	        actorZoom:1.0,
+	        targetReachedDelay:2000,
+	        spawnArea:[0.5,0.5]
+	    });
+        
+    }
+    
+    
+    </script>
+</body>
+</html>
