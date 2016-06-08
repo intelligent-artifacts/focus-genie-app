@@ -9,3 +9,10 @@ This genie changes the direction of a vector based on context from strings.  The
 In short time, the genie learns to stay away from bombs and go get food.
 
 Play around with the scalar value to change how quickly the genie learns this.  Add new items to the scene, or make things change their responses to the genie to see how the genie adapts in real-time.
+
+To Run:
+-------
+
+Run this on a server.  
+
+Alternatively, Firefox users can run it by opening the index.html file, directly.  (Chrome, Safari, and IE users will get cross origin request error if attempting to load the file directly.)
