@@ -10,6 +10,11 @@ In short time, the genie learns to stay away from bombs and go get food.
 
 Play around with the scalar value to change how quickly the genie learns this.  Add new items to the scene, or make things change their responses to the genie to see how the genie adapts in real-time.
 
+Tutorial:
+---------
+
+Available here: http://www.intelligent-artifacts.com/docs/example_focus_genie.html
+
 To Run:
 -------
 
